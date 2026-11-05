@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetSOS | Cuidado e reencontros</title>
+<style>
+:root{--green:#16856b;--green2:#0e6b56;--mint:#e9f7f2;--ink:#18332d;--muted:#6b7d77;--cream:#fbfdfb;--orange:#ffb45c;--line:#e5eee9;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--cream);color:var(--ink)}
+header{position:sticky;top:0;z-index:10;background:#ffffffed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1160px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:1.3rem;color:var(--green2);text-decoration:none}.brand-mark{width:39px;height:39px;border-radius:13px;background:var(--green);color:white;display:grid;place-items:center;font-size:22px}
+nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}nav a{padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:650;font-size:.92rem}nav a:hover,nav a.active{background:var(--mint);color:var(--green2)}
+.btn{border:0;border-radius:12px;padding:12px 17px;background:var(--green);color:white;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{background:var(--green2)}.btn.light{background:white;color:var(--green2);border:1px solid var(--line)}.btn.orange{background:var(--orange);color:#55340d}
+main{max-width:1160px;margin:auto;padding:30px 22px 70px}.hero{display:grid;grid-template-columns:1.12fr .88fr;gap:35px;align-items:center;padding:44px 0 54px}.eyebrow{color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.76rem}.hero h1{font-size:clamp(2.4rem,5vw,4.4rem);line-height:1.04;letter-spacing:-.055em;margin:14px 0 18px}.hero h1 span{color:var(--green)}.hero p{font-size:1.08rem;line-height:1.75;color:var(--muted);max-width:570px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.hero-art{min-height:370px;border-radius:30px;background:linear-gradient(145deg,#dff4eb,#f4f8df);position:relative;display:grid;place-items:center;overflow:hidden}.hero-art:before,.hero-art:after{content:"";position:absolute;border-radius:50%;background:#ffffff65}.hero-art:before{width:270px;height:270px;right:-55px;top:-65px}.hero-art:after{width:170px;height:170px;left:-50px;bottom:-55px}.pet-emoji{font-size:150px;filter:drop-shadow(0 15px 12px #315d4c25);z-index:1}.floating{position:absolute;background:white;padding:13px 16px;border-radius:16px;box-shadow:0 12px 35px #204c3b18;font-weight:750;z-index:2}.float-one{top:42px;left:25px}.float-two{right:22px;bottom:45px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:10px 0 55px}.stat{background:white;border:1px solid var(--line);border-radius:18px;padding:20px}.stat strong{font-size:1.6rem;color:var(--green2);display:block}.stat span{color:var(--muted);font-size:.9rem}
+.section{padding:38px 0 25px;scroll-margin-top:90px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:22px}.section h2{font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.04em;margin:8px 0}.section-head p,.muted{color:var(--muted);line-height:1.6;margin:0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.field,select,textarea{width:100%;border:1px solid #dce8e1;border-radius:11px;padding:12px 13px;background:white;font:inherit;color:var(--ink);outline:none}.field:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #16856b18}.toolbar .field{flex:1;min-width:190px}.toolbar select{width:auto;min-width:150px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.pet-card{background:white;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 8px 25px #193b2e08}.pet-photo{height:175px;display:grid;place-items:center;font-size:82px;background:linear-gradient(135deg,#e8f5ed,#fff0dc);position:relative}.tag{position:absolute;top:13px;left:13px;background:#fff;border-radius:999px;padding:7px 10px;font-size:.75rem;font-weight:800;color:var(--green2)}.pet-content{padding:17px}.pet-content h3{margin:0 0 6px}.pet-content p{margin:6px 0;color:var(--muted);font-size:.9rem;line-height:1.5}.pet-meta{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.chip{font-size:.77rem;background:var(--mint);color:var(--green2);padding:6px 9px;border-radius:999px;font-weight:700}.card-actions{display:flex;gap:8px;margin-top:14px}.card-actions button{flex:1}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:25px;align-items:stretch}.panel{background:white;border:1px solid var(--line);border-radius:22px;padding:25px}.panel h3{margin:0 0 8px;font-size:1.25rem}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}.form-group label{font-size:.86rem;font-weight:750}.form-group small{color:var(--muted)}.form-actions{margin-top:16px}
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.service{background:white;border:1px solid var(--line);padding:22px;border-radius:18px}.service .ico{width:48px;height:48px;border-radius:15px;background:var(--mint);display:grid;place-items:center;font-size:24px;margin-bottom:14px}.service h3{margin:0 0 7px}.service p{color:var(--muted);font-size:.9rem;line-height:1.55;margin:0}
+.notice{background:#fff7e9;border:1px solid #f5e4c8;color:#76501d;border-radius:14px;padding:13px 15px;font-size:.88rem;line-height:1.5;margin-top:15px}
+.empty{background:white;border:1px dashed #cbdcd2;border-radius:18px;padding:30px;text-align:center;color:var(--muted);grid-column:1/-1}
+footer{background:#153e33;color:#e8f5ef;padding:35px 22px}.footer-inner{max-width:1160px;margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-inner p{color:#b7d2c7;margin:8px 0}
+.modal{display:none;position:fixed;inset:0;background:#10251f99;z-index:20;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-box{background:white;border-radius:20px;padding:25px;max-width:520px;width:100%;max-height:90vh;overflow:auto}.modal-top{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#edf5f0;border-radius:50%;width:35px;height:35px;font-size:20px;cursor:pointer}
+.toast{position:fixed;bottom:22px;right:22px;background:#153e33;color:white;padding:14px 18px;border-radius:13px;box-shadow:0 10px 30px #0002;display:none;z-index:30}.toast.show{display:block}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.hero-art{min-height:290px}.cards,.services{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.nav{align-items:flex-start;flex-direction:column}.nav nav{width:100%}nav a{padding:8px 10px}.hero{padding-top:25px}.stats{grid-template-columns:1fr}.cards,.services,.split{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.section-head{align-items:flex-start;flex-direction:column}.pet-photo{height:155px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+<a class="brand" href="#inicio"><span class="brand-mark">🐾</span> PetSOS</a>
+<nav><a href="#inicio" class="active">Início</a><a href="#perdidos">Pets perdidos</a><a href="#clinica">Clínica veterinária</a><a href="#cadastro">Meus pets</a></nav>
+<a class="btn" href="#perdidos">Encontrar um pet</a>
+</div></header>
+<main>
+<section class="hero" id="inicio">
+<div><div class="eyebrow">Cuidado, proteção e reencontros</div><h1>Quem ama, <span>cuida.</span><br>Quem procura, encontra.</h1>
+<p>O PetSOS conecta tutores, comunidade e clínicas veterinárias em um só lugar. Cuide da saúde do seu melhor amigo e ajude animais perdidos a voltarem para casa.</p>
+<div class="hero-actions"><a class="btn" href="#perdidos">🔎 Buscar animais</a><a class="btn light" href="#clinica">🏥 Conhecer a clínica</a></div></div>
+<div class="hero-art"><div class="floating float-one">💚 Cuidado em primeiro lugar</div><div class="pet-emoji">🐶</div><div class="floating float-two">🐾 Juntos pelo reencontro</div></div>
+</section>
+<div class="stats"><div class="stat"><strong>🐾 Comunidade</strong><span>Todos podem ajudar</span></div><div class="stat"><strong>🏥 Saúde animal</strong><span>Informações em um só lugar</span></div><div class="stat"><strong>💚 Reencontros</strong><span>Mais chances de voltar para casa</span></div></div>
+
+<section class="section" id="perdidos">
+<div class="section-head"><div><div class="eyebrow">Rede de ajuda</div><h2>Pets perdidos e encontrados</h2><p>Veja os anúncios e ajude a reunir famílias.</p></div><button class="btn orange" onclick="openModal('lostModal')">＋ Publicar anúncio</button></div>
+<div class="toolbar"><input class="field" id="searchPet" placeholder="Buscar por nome, raça ou característica..." oninput="renderLost()"><select id="filterStatus" onchange="renderLost()"><option value="">Todas as situações</option><option value="Perdido">Perdidos</option><option value="Encontrado">Encontrados</option></select><select id="filterSpecies" onchange="renderLost()"><option value="">Todas as espécies</option><option value="Cachorro">Cachorros</option><option value="Gato">Gatos</option><option value="Outro">Outros</option></select></div>
+<div class="cards" id="lostCards"></div>
+</section>
+
+<section class="section" id="clinica">
+<div class="section-head"><div><div class="eyebrow">Saúde e bem-estar</div><h2>Clínica veterinária</h2><p>Atendimento e organização para acompanhar a saúde do seu pet.</p></div></div>
+<div class="services">
+<div class="service"><div class="ico">🩺</div><h3>Consultas</h3><p>Avaliação clínica, orientações e acompanhamento da saúde do animal.</p></div>
+<div class="service"><div class="ico">💉</div><h3>Vacinação</h3><p>Controle das vacinas e cuidados preventivos para cada fase da vida.</p></div>
+<div class="service"><div class="ico">🦷</div><h3>Cuidados gerais</h3><p>Orientações sobre higiene, alimentação e qualidade de vida.</p></div>
+</div>
+<div class="split" style="margin-top:20px">
+<div class="panel"><h3>📅 Agende um atendimento</h3><p class="muted">Preencha os dados para solicitar um horário na clínica.</p>
+<form id="appointmentForm"><div class="form-grid">
+<div class="form-group"><label>Nome do tutor</label><input class="field" name="tutor" required placeholder="Seu nome"></div>
+<div class="form-group"><label>Nome do pet</label><input class="field" name="pet" required placeholder="Nome do animal"></div>
+<div class="form-group"><label>Serviço</label><select name="service" required><option value="">Selecione</option><option>Consulta veterinária</option><option>Vacinação</option><option>Cuidados gerais</option></select></div>
+<div class="form-group"><label>Data desejada</label><input class="field" type="date" name="date" required></div>
+<div class="form-group full"><label>Observações</label><textarea name="notes" rows="3" placeholder="Conte um pouco sobre o atendimento necessário"></textarea></div>
+</div><div class="form-actions"><button class="btn" type="submit">Solicitar agendamento</button></div></form>
+</div>
+<div class="panel"><h3>📋 Histórico e acompanhamento</h3><p class="muted">Mantenha os dados do seu animal organizados para facilitar os próximos atendimentos.</p>
+<ul style="padding-left:20px;line-height:2.1;color:var(--muted)"><li>Cadastro e identificação do pet</li><li>Registro de consultas e procedimentos</li><li>Controle de vacinação</li><li>Informações do tutor</li></ul>
+<div class="notice">Este site é um protótipo acadêmico. Os agendamentos são demonstrações e não são enviados a uma clínica real.</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="cadastro">
+<div class="section-head"><div><div class="eyebrow">Área do tutor</div><h2>Meus pets</h2><p>Cadastre seus animais para manter as informações organizadas.</p></div></div>
+<div class="split">
+<div class="panel"><h3>🐕 Cadastrar meu pet</h3><form id="petForm"><div class="form-grid">
+<div class="form-group"><label>Nome do pet</label><input class="field" name="name" required placeholder="Ex.: Thor"></div>
+<div class="form-group"><label>Espécie</label><select name="species" required><option value="">Selecione</option><option>Cachorro</option><option>Gato</option><option>Outro</option></select></div>
+<div class="form-group"><label>Raça</label><input class="field" name="breed" placeholder="Ex.: SRD"></div>
+<div class="form-group"><label>Idade</label><input class="field" name="age" placeholder="Ex.: 2 anos"></div>
+<div class="form-group full"><label>Cor / características</label><input class="field" name="features" placeholder="Ex.: caramelo, mancha branca no peito"></div>
+</div><div class="form-actions"><button class="btn" type="submit">Salvar pet</button></div></form></div>
+<div class="panel"><h3>💚 Animais cadastrados</h3><div id="myPets"><p class="muted">Seus pets cadastrados aparecerão aqui.</p></div></div>
+</div>
+</section>
+</main>
+<footer><div class="footer-inner"><div><a class="brand" href="#inicio" style="color:white"><span class="brand-mark">🐾</span> PetSOS</a><p>Cuidar, conectar e ajudar a reencontrar.</p></div><div><strong>Projeto acadêmico • ADS / Desenvolvimento de Sistemas</strong><p>Protótipo demonstrativo — PetSOS</p></div></div></footer>
+
+<div class="modal" id="lostModal"><div class="modal-box"><div class="modal-top"><h3>📢 Publicar anúncio</h3><button class="close" onclick="closeModal('lostModal')">×</button></div><p class="muted">Informe os dados para ajudar a comunidade a identificar o animal.</p>
+<form id="lostForm"><div class="form-grid">
+<div class="form-group"><label>Nome do animal</label><input class="field" name="name" required></div>
+<div class="form-group"><label>Situação</label><select name="status"><option>Perdido</option><option>Encontrado</option></select></div>
+<div class="form-group"><label>Espécie</label><select name="species"><option>Cachorro</option><option>Gato</option><option>Outro</option></select></div>
+<div class="form-group"><label>Cor / raça</label><input class="field" name="features" required></div>
+<div class="form-group full"><label>Bairro / local</label><input class="field" name="location" required placeholder="Ex.: Centro, Jaboatão"></div>
+<div class="form-group full"><label>Contato para retorno</label><input class="field" name="contact" required placeholder="Telefone ou WhatsApp"></div>
+<div class="form-group full"><label>Descrição</label><textarea class="field" name="description" rows="3" placeholder="Conte quando e onde foi visto, características etc."></textarea></div>
+</div><div class="form-actions"><button class="btn" type="submit">Publicar anúncio</button></div></form></div></div>
+<div class="modal" id="sightingModal"><div class="modal-box"><div class="modal-top"><h3>👀 Registrar avistamento</h3><button class="close" onclick="closeModal('sightingModal')">×</button></div><p class="muted" id="sightingPetName"></p><form id="sightingForm"><input type="hidden" name="petId"><div class="form-group"><label>Local onde viu o animal</label><input class="field" name="place" required placeholder="Rua, bairro ou ponto de referência"></div><div class="form-group" style="margin-top:12px"><label>Data e horário aproximado</label><input class="field" name="when" required placeholder="Ex.: hoje, por volta das 15h"></div><div class="form-group" style="margin-top:12px"><label>Informações adicionais</label><textarea class="field" name="details" rows="3"></textarea></div><div class="form-actions"><button class="btn" type="submit">Enviar avistamento</button></div></form></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const initialLost=[
+{id:1,name:"Luna",status:"Perdido",species:"Cachorro",features:"Caramelo • porte médio",location:"Piedade, Jaboatão",contact:"(81) 99999-0001",description:"Desapareceu perto da praça. É dócil e atende pelo nome.",emoji:"🐕",sightings:[]},
+{id:2,name:"Mingau",status:"Perdido",species:"Gato",features:"Branco e cinza • olhos claros",location:"Boa Viagem, Recife",contact:"(81) 99999-0002",description:"Gato de estimação. Pode estar assustado; aproxime-se com cuidado.",emoji:"🐈",sightings:[]},
+{id:3,name:"Bob",status:"Encontrado",species:"Cachorro",features:"Preto • pequeno porte",location:"Candeias, Jaboatão",contact:"(81) 99999-0003",description:"Encontrado próximo a um mercado. Está em segurança aguardando o tutor.",emoji:"🐶",sightings:[]}
+];
+let lost=JSON.parse(localStorage.getItem("petsos_lost")||"null")||initialLost;
+let myPets=JSON.parse(localStorage.getItem("petsos_myPets")||"[]");
+let nextId=Math.max(3,...lost.map(p=>p.id))+1;
+function save(){localStorage.setItem("petsos_lost",JSON.stringify(lost));localStorage.setItem("petsos_myPets",JSON.stringify(myPets))}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000)}
+function openModal(id){document.getElementById(id).classList.add("show")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+function renderLost(){
+ const q=document.getElementById("searchPet").value.toLowerCase(),st=document.getElementById("filterStatus").value,sp=document.getElementById("filterSpecies").value;
+ const list=lost.filter(p=>(!st||p.status===st)&&(!sp||p.species===sp)&&[p.name,p.features,p.location,p.description].join(" ").toLowerCase().includes(q));
+ const root=document.getElementById("lostCards");
+ if(!list.length){root.innerHTML='<div class="empty">Nenhum anúncio encontrado. Tente mudar os filtros ou publique um novo anúncio.</div>';return}
+ root.innerHTML=list.map(p=>`<article class="pet-card"><div class="pet-photo"><span class="tag">${p.status==="Perdido"?"🔴 Perdido":"🟢 Encontrado"}</span>${p.emoji||"🐾"}</div><div class="pet-content"><h3>${esc(p.name)}</h3><p>${esc(p.description||"Sem descrição adicional.")}</p><div class="pet-meta"><span class="chip">${esc(p.species)}</span><span class="chip">${esc(p.features)}</span></div><p>📍 ${esc(p.location)}</p><p>📞 ${esc(p.contact)}</p><p>👀 ${p.sightings?.length||0} avistamento(s) registrado(s)</p><div class="card-actions"><button class="btn" onclick="reportSighting(${p.id})">Registrar avistamento</button></div>${p.sightings?.length?`<p style="margin-top:12px"><strong>Relatos:</strong> ${p.sightings.map(s=>esc(s.place)+" — "+esc(s.when)).join("; ")}</p>`:""}</div></article>`).join("");
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function reportSighting(id){const p=lost.find(x=>x.id===id);document.querySelector('#sightingForm [name="petId"]').value=id;document.getElementById("sightingPetName").textContent="Avistamento para: "+p.name;openModal("sightingModal")}
+document.getElementById("lostForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));lost.unshift({...d,id:nextId++,emoji:d.species==="Gato"?"🐈":d.species==="Cachorro"?"🐕":"🐾",sightings:[]});save();renderLost();e.target.reset();closeModal("lostModal");toast("Anúncio publicado neste navegador!")});
+document.getElementById("sightingForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const p=lost.find(x=>x.id===Number(d.petId));p.sightings=p.sightings||[];p.sightings.push({place:d.place,when:d.when,details:d.details});save();renderLost();e.target.reset();closeModal("sightingModal");toast("Avistamento registrado!")});
+document.getElementById("petForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));myPets.push(d);save();renderMyPets();e.target.reset();toast("Pet cadastrado com sucesso!")});
+function renderMyPets(){const root=document.getElementById("myPets");root.innerHTML=myPets.length?myPets.map(p=>`<div style="padding:13px 0;border-bottom:1px solid var(--line)"><strong>🐾 ${esc(p.name)}</strong><p class="muted" style="margin:5px 0">${esc(p.species)} • ${esc(p.breed||"Raça não informada")} • ${esc(p.age||"Idade não informada")}</p><small>${esc(p.features||"Sem características cadastradas")}</small></div>`).join(""):'<p class="muted">Seus pets cadastrados aparecerão aqui.</p>'}
+document.getElementById("appointmentForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));toast("Solicitação demonstrativa registrada para "+d.pet+".");e.target.reset()});
+renderLost();renderMyPets();
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>{document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active')}));
+</script>
+</body></html>
