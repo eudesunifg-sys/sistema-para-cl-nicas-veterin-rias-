@@ -1,0 +1,1229 @@
+status: exited
+stdout file: /figaro/tool-output/bash/1/stdout (53633 bytes)
+stderr file: /figaro/tool-output/bash/1/stderr (0 bytes)
+exit code: 0
+
+OUTPUT TRUNCATED: the head-and-tail previews below are INCOMPLETE; the middle is omitted. Complete output is saved at the stdout/stderr paths above. If your task depends on omitted content, you MUST use `read` on the relevant file and follow its continuation offsets through the required content before generating or changing code. Do not guess or infer omitted content from the preview. Reading with bash again can truncate again.
+
+--- stdout (head + tail; full output in file above) ---
+import Image from 'next/image'
+import Link from 'next/link'
+import type { AppRole } from '@/access/app-access'
+import { Icon, type IconName } from '@/components/petsos/Icon'
+import type {
+  SerializedAppointment,
+  SerializedLostReport,
+  SerializedPet,
+  SerializedUserRow,
+} from '@/lib/petsos-types'
+
+type Counts = {
+  appointments: number
+  lostReports: number
+  pets: number
+  users: number
+}
+
+const statusBadges: Record<string, { label: string; cls: string }> = {
+  scheduled: { label: 'Agendada', cls: 'bg-[#62B9E8]/18 text-[#287BA8]' },
+  waiting: { label: 'Aguardando', cls: 'bg-[#F4B96A]/25 text-[#966A25]' },
+  in_progress: { label: 'Em atendimento', cls: 'bg-[#27A879]/16 text-[#208761]' },
+  completed: { label: 'Finalizada', cls: 'bg-[#273C42]/10 text-[#273C42]' },
+  cancelled: { label: 'Cancelada', cls: 'bg-[#C9634C]/15 text-[#9A3F2B]' },
+}
+
+const speciesLabel: Record<string, string> = { dog: 'Cão', cat: 'Gato', other: 'Outro' }
+
+function KpiCard({
+  label,
+  value,
+  icon,
+  tone,
+}: {
+  label: string
+  value: number
+  icon: IconName
+  tone: 'mint' | 'blue' | 'yellow' | 'dark'
+}) {
+  const tones = {
+    mint: 'bg-[#27A879]/14 text-[#208761]',
+    blue: 'bg-[#62B9E8]/18 text-[#287BA8]',
+    yellow: 'bg-[#F4B96A]/25 text-[#966A25]',
+    dark: 'bg-[#273C42]/10 text-[#273C42]',
+  }
+  return (
+    <article className="rounded-[20px_20px_20px_7px] border border-[#273C42]/8 bg-white p-5 shadow-[0_10px_30px_rgba(39,60,66,.04)]">
+      <div className="flex items-start justify-between">
+        <span
+          className={`grid size-11 place-items-center rounded-[13px_13px_13px_5px] ${tones[tone]}`}
+        >
+          <Icon name={icon} size={21} />
+        </span>
+        <span className="rounded-md bg-[#F8F5F0] px-2 py-0.5 text-[9px] font-extrabold text-[#6F7D80]">
+          BANCO REAL
+        </span>
+      </div>
+      <strong className="mt-5 block text-3xl font-black">{value}</strong>
+      <p className="mt-1 text-xs font-semibold text-[#6F7D80]">{label}</p>
+    </article>
+  )
+}
+
+export function DashboardView({
+  appointments,
+  counts,
+  firstName,
+  lostReports,
+  pets,
+  role,
+  userRows,
+}: {
+  appointments: SerializedAppointment[]
+  counts: Counts
+  firstName: string
+  lostReports: SerializedLostReport[]
+  pets: SerializedPet[]
+  role: AppRole
+  userRows: SerializedUserRow[]
+}) {
+  const waitingQueue = appointments.filter(
+    (a) => a.status === 'waiting' || a.status === 'in_progress',
+  )
+  const pendingConsults = appointments.filter((a) => a.status === 'scheduled')
+  const completedRecords = appointments.filter((a) => a.status === 'completed')
+
+  return (
+    <main className="px-5 py-8 md:px-8 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-[1320px]">
+        {role === 'tutor' && (
+          <>
+            <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
+              <div>
+                <p className="text-[10px] font-extrabold tracking-[1.7px] text-[#27A879] uppercase">
+                  Dashboard do Tutor
+                </p>
+                <h1 className="mt-2 text-3xl font-black tracking-[-1.4px] md:text-4xl">
+                  Olá, {firstName}. Tudo pronto para cuidar hoje?
+                </h1>
+                <p className="mt-2 text-sm text-[#6F7D80]">
+                  Resumo dos animais cadastrados, próximas consultas, avisos, histórico clínico e
+                  acesso rápido à busca de animais.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/sistema/animais"
+                  className="flex min-h-11 items-center gap-2 rounded-[13px_13px_13px_5px] bg-[#27A879] px-5 text-sm font-bold text-white shadow-[0_10px_25px_rgba(39,168,121,.2)]"
+                >
+                  <Icon name="plus" size={17} /> Cadastrar animal
+                </Link>
+                <Link
+                  href="/sistema/consultas"
+                  className="flex min-h-11 items-center gap-2 rounded-xl border border-[#273C42]/12 bg-white px-5 text-sm font-bold"
+                >
+                  <Icon name="calendar" size={17} /> Agendar consulta
+                </Link>
+                <Link
+                  href="/sistema/ocorrencias"
+                  className="flex min-h-11 items-center gap-2 rounded-xl bg-[#F4B96A]/30 px-5 text-sm font-bold text-[#7A5A24]"
+                >
+                  <Icon name="search" size={17} /> Busca de animais
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <KpiCard
+                label="Meus animais cadastrados"
+                value={counts.pets}
+                icon="paw"
+                tone="mint"
+              />
+              <KpiCard
+                label="Próximas consultas"
+                value={pendingConsults.length}
+                icon="calendar"
+                tone="blue"
+              />
+              <KpiCard
+                label="Histórico de atendimentos"
+                value={completedRecords.length}
+                icon="file"
+                tone="dark"
+              />
+              <KpiCard
+                label="Ocorrências na rede"
+                value={counts.lostReports}
+                icon="search"
+                tone="yellow"
+              />
+            </div>
+
+            <div className="mt-6 grid gap-5 xl:grid-cols-[1.35fr_.65fr]">
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[9px] font-extrabold tracking-[1.4px] text-[#27A879] uppercase">
+                      Meus companheiros
+                    </p>
+                    <h2 className="mt-1 text-xl font-extrabold">Animais cadastrados</h2>
+                  </div>
+                  <Link href="/sistema/animais" className="text-xs font-bold text-[#287BA8]">
+                    Gerenciar todos →
+                  </Link>
+                </div>
+
+                {pets.length === 0 ? (
+                  <div className="mt-5 grid min-h-48 place-items-center rounded-2xl bg-[#F8F5F0] p-7 text-center">
+                    <div>
+                      <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#27A879]/14 text-[#208761]">
+                        <Icon name="paw" size={22} />
+                      </span>
+                      <h3 className="mt-4 text-sm font-extrabold">
+                        Nenhum animal cadastrado ainda
+                      </h3>
+                      <p className="mt-1.5 max-w-sm text-xs leading-5 text-[#7D898B]">
+                        Cadastre seu cão ou gato para acompanhar vacinas, exames, prontuários e
+                        agendar consultas.
+                      </p>
+                      <Link
+                        href="/sistema/animais"
+                        className="mt-4 inline-flex rounded-xl bg-[#27A879] px-4 py-2 text-xs font-bold text-white"
+                      >
+                        + Cadastrar primeiro pet
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {pets.slice(0, 4).map((pet) => (
+                      <Link
+                        key={pet.id}
+                        href="/sistema/animais"
+                        className="flex items-center gap-3.5 rounded-2xl border border-[#273C42]/8 bg-[#F8F5F0] p-4 transition hover:bg-[#F5E9D8]/60"
+                      >
+                        <div className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-[#F5E9D8]">
+                          {pet.photoUrl ? (
+                            <Image
+                              src={pet.photoUrl}
+                              alt={pet.name}
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className="grid size-full place-items-center text-[#27A879]">
+                              <Icon name="paw" size={22} />
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <strong className="block truncate text-sm font-black">{pet.name}</strong>
+                          <span className="text-xs text-[#6F7D80]">
+                            {speciesLabel[pet.species] ?? pet.species}
+                            {pet.breed ? ` · ${pet.breed}` : ''}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="relative overflow-hidden rounded-[22px_22px_22px_8px] bg-[#273C42] p-7 text-white">
+                <div className="absolute -bottom-16 -right-12 size-52 rounded-full bg-[#27A879]/25" />
+                <span className="relative grid size-12 place-items-center rounded-[14px_14px_14px_5px] bg-[#F4B96A] text-[#273C42]">
+                  <Icon name="sparkles" size={23} />
+                </span>
+                <p className="relative mt-7 text-[9px] font-extrabold tracking-[1.4px] text-[#F4B96A] uppercase">
+                  IA para Tutores · Apoio preventivo
+                </p>
+                <h2 className="relative mt-2 text-2xl font-black">
+                  Orientações de cuidado, alimentação e prevenção.
+                </h2>
+                <p className="relative mt-3 text-xs leading-5 text-white/70">
+                  Selecione um animal e tire dúvidas rápidas. A IA nunca substitui a avaliação de um
+                  médico-veterinário.
+                </p>
+                <Link
+                  href="/sistema/ia"
+                  className="relative mt-6 inline-flex items-center gap-2 rounded-xl bg-[#27A879] px-4 py-2.5 text-xs font-bold text-white"
+                >
+                  Conversar com o assistente <Icon name="arrow" size={15} />
+                </Link>
+              </section>
+            </div>
+
+            <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black">Próximas consultas e histórico</h2>
+                  <Link href="/sistema/consultas" className="text-xs font-bold text-[#287BA8]">
+                    Ver agenda →
+                  </Link>
+                </div>
+                {appointments.length === 0 ? (
+                  <p className="mt-4 rounded-2xl bg-[#F8F5F0] p-6 text-center text-xs text-[#6F7D80]">
+                    Nenhuma consulta agendada ou registrada no momento.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-2.5">
+                    {appointments.slice(0, 4).map((apt) => {
+                      const badge = statusBadges[apt.status] ?? statusBadges.scheduled
+                      return (
+                        <div
+                          key={apt.id}
+                          className="flex items-center justify-between rounded-xl bg-[#F8F5F0] p-3.5 text-xs"
+                        >
+                          <div>
+                            <strong className="block font-extrabold">
+                              {apt.petName} · {apt.reason}
+                            </strong>
+                            <span className="text-[#6F7D80]">
+                              {new Intl.DateTimeFormat('pt-BR', {
+                                dateStyle: 'short',
+                                timeStyle: 'short',
+                              }).format(new Date(apt.scheduledAt))}
+                            </span>
+                          </div>
+                          <span
+                            className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold ${badge.cls}`}
+                          >
+                            {badge.label}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
+
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black">Notificações e busca de animais</h2>
+                  <Link href="/animais-perdidos" className="text-xs font-bold text-[#27A879]">
+                    Central pública →
+                  </Link>
+                </div>
+                {lostReports.length === 0 ? (
+                  <p className="mt-4 rounded-2xl bg-[#F8F5F0] p-6 text-center text-xs text-[#6F7D80]">
+                    Nenhum alerta ou aviso pendente. Você pode publicar ocorrências de animais
+                    perdidos ou encontrados em /sistema/ocorrencias.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-2.5">
+                    {lostReports.slice(0, 3).map((rep) => (
+                      <Link
+                        key={rep.id}
+                        href={`/animais-perdidos/${rep.id}`}
+                        className="flex items-center justify-between rounded-xl bg-[#F8F5F0] p-3.5 text-xs"
+                      >
+                        <div>
+                          <strong className="block font-extrabold">{rep.animalName}</strong>
+                          <span className="text-[#6F7D80]">
+                            {rep.neighborhood}, {rep.city}
+                          </span>
+                        </div>
+                        <span
+                          className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold text-white ${
+                            rep.situation === 'lost' ? 'bg-[#C9634C]' : 'bg-[#27A879]'
+                          }`}
+                        >
+                          {rep.situation === 'lost' ? 'PERDIDO' : 'ENCONTRADO'}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+          </>
+        )}
+
+        {role === 'veterinarian' && (
+          <>
+            <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
+              <div>
+                <p className="text-[10px] font-extrabold tracking-[1.7px] text-[#27A879] uppercase">
+                  Dashboard Veterinário
+                </p>
+                <h1 className="mt-2 text-3xl font-black tracking-[-1.4px] md:text-4xl">
+                  Rotina Clínica & Prontuários
+                </h1>
+                <p className="mt-2 text-sm text-[#6F7D80]">
+                  Agenda do dia, pacientes aguardando, consultas pendentes, últimos prontuários e
+                  assistente de IA clínica.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/sistema/prontuarios"
+                  className="flex min-h-11 items-center gap-2 rounded-[13px_13px_13px_5px] bg-[#27A879] px-5 text-sm font-bold text-white"
+                >
+                  <Icon name="file" size={17} /> Abrir prontuários
+                </Link>
+                <Link
+                  href="/sistema/ia-clinica"
+                  className="flex min-h-11 items-center gap-2 rounded-xl bg-[#273C42] px-5 text-sm font-bold text-white"
+                >
+                  <Icon name="sparkles" size={17} /> Assistente IA Clínica
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <KpiCard
+                label="Agenda registrada"
+                value={counts.appointments}
+                icon="calendar"
+                tone="mint"
+              />
+              <KpiCard
+                label="Pacientes aguardando"
+                value={waitingQueue.length}
+                icon="clock"
+                tone="yellow"
+              />
+              <KpiCard
+                label="Consultas pendentes"
+                value={pendingConsults.length}
+                icon="stethoscope"
+                tone="blue"
+              />
+              <KpiCard label="Pacientes cadastrados" value={counts.pets} icon="paw" tone="dark" />
+            </div>
+
+            <div className="mt-6 grid gap-5 lg:grid-cols-[1.3fr_.7fr]">
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black">Fila clínica e agenda do dia</h2>
+                  <Link href="/sistema/fila" className="text-xs font-bold text-[#287BA8]">
+                    Gerenciar fila →
+                  </Link>
+                </div>
+                {appointments.length === 0 ? (
+                  <p className="mt-5 rounded-2xl bg-[#F8F5F0] p-8 text-center text-xs text-[#6F7D80]">
+                    Nenhum paciente aguardando ou agendado no momento.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-2.5">
+                    {appointments.slice(0, 6).map((apt) => {
+                      const badge = statusBadges[apt.status] ?? statusBadges.scheduled
+                      return (
+                        <div
+                          key={apt.id}
+                          className="flex items-center justify-between rounded-xl bg-[#F8F5F0] p-4 text-xs"
+                        >
+                          <div>
+                            <strong className="block font-extrabold">
+                              {apt.petName} — {apt.reason}
+                            </strong>
+                            <span className="text-[#6F7D80]">Tutor: {apt.tutorName}</span>
+                          </div>
+                          <span
+                            className={`rounded-lg px-2.5 py-1 text-[10px] font-extrabold ${badge.cls}`}
+                          >
+                            {badge.label}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
+
+              <section className="rounded-[22px_22px_22px_8px] bg-[#273C42] p-6 text-white">
+                <span className="inline-flex rounded-lg bg-[#62B9E8]/25 px-2.5 py-1 text-[10px] font-extrabold text-[#62B9E8] uppercase">
+                  IA Clínica · Suporte à decisão
+                </span>
+                <h2 className="mt-4 text-xl font-black">
+                  Resumo SOAP, hipóteses e pontos de atenção.
+                </h2>
+                <p className="mt-2 text-xs leading-5 text-white/70">
+                  Ferramenta auxiliar exclusiva para médicos-veterinários. Nunca substitui o exame
+                  físico nem o julgamento clínico profissional.
+                </p>
+                <div className="mt-5 grid gap-2 text-xs font-bold">
+                  <Link
+                    href="/sistema/ia-clinica"
+                    className="flex items-center justify-between rounded-xl bg-white/10 p-3.5"
+                  >
+                    Iniciar análise clínica <Icon name="arrow" size={14} />
+                  </Link>
+                  <Link
+                    href="/sistema/exames"
+                    className="flex items-center justify-between rounded-xl bg-white/10 p-3.5"
+                  >
+                    Solicitações e laudos de exames <Icon name="syringe" size={14} />
+                  </Link>
+                </div>
+              </section>
+            </div>
+          </>
+        )}
+
+        {role === 'receptionist' && (
+          <>
+            <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
+              <div>
+                <p className="text-[10px] font-extrabold tracking-[1.7px] text-[#27A879] uppercase">
+                  Dashboard da Recepção
+                </p>
+                <h1 className="mt-2 text-3xl font-black tracking-[-1.4px] md:text-4xl">
+                  Agenda, Cadastros e Fila de Atendimento
+                </h1>
+                <p className="mt-2 text-sm text-[#6F7D80]">
+                  Organize encaixes, confirme chegadas na recepção e mantenha tutores e animais
+                  atualizados.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/sistema/agenda"
+                  className="flex min-h-11 items-center gap-2 rounded-[13px_13px_13px_5px] bg-[#27A879] px-5 text-sm font-bold text-white"
+                >
+                  <Icon name="plus" size={17} /> Novo agendamento
+                </Link>
+                <Link
+                  href="/sistema/cadastros"
+                  className="flex min-h-11 items-center gap-2 rounded-xl border border-[#273C42]/12 bg-white px-5 text-sm font-bold"
+                >
+                  <Icon name="users" size={17} /> Cadastros recentes
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <KpiCard
+                label="Agendamentos totais"
+                value={counts.appointments}
+                icon="calendar"
+                tone="mint"
+              />
+              <KpiCard
+                label="Fila de espera ativa"
+                value={waitingQueue.length}
+                icon="clock"
+                tone="yellow"
+              />
+              <KpiCard label="Animais cadastrados" value={counts.pets} icon="paw" tone="blue" />
+              <KpiCard label="Contas visíveis" value={counts.users} icon="users" tone="dark" />
+            </div>
+
+            <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black">Fila de atendimento da recepção</h2>
+                  <Link href="/sistema/fila" className="text-xs font-bold text-[#27A879]">
+                    Abrir controle de fila →
+                  </Link>
+                </div>
+                {appointments.length === 0 ? (
+                  <p className="mt-4 rounded-2xl bg-[#F8F5F0] p-7 text-center text-xs text-[#6F7D80]">
+                    Nenhum paciente na recepção no momento.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-2.5">
+                    {appointments.slice(0, 5).map((apt) => (
+                      <div
+                        key={apt.id}
+                        className="flex items-center justify-between rounded-xl bg-[#F8F5F0] p-3.5 text-xs"
+                      >
+                        <span>
+                          <strong>{apt.petName}</strong> · {apt.reason}
+                        </span>
+                        <span className="font-bold text-[#208761]">
+                          {statusBadges[apt.status]?.label ?? apt.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="rounded-[22px_22px_22px_8px] border border-[#273C42]/8 bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-black">Últimos animais cadastrados</h2>
+                  <Link href="/sistema/cadastros" className="text-xs font-bold text-[#287BA8]">
+                    Novo cadastro →
+                  </Link>
+                </div>
+                {pets.length === 0 ? (
+                  <p className="mt-4 rounded-2xl bg-[#F8F5F0] p-7 text-center text-xs text-[#6F7D80]">
+                    Nenhum cadastro recente registrado.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-2.5">
+                    {pets.slice(0, 5).map((p) => (
+                      <div
+                        key={p.id}
+                        className="flex items-center justify-between rounded-xl bg-[#F8F5F0] p-3.5 text-xs"
+                      >
+                        <strong>{p.name}</strong>
+                        <span className="text-[#6F7D80]">
+                          {speciesLabel[p.species] ?? p.species}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+          </>
+        )}
+
+        {role === 'administrator' && (
+          <>
+            <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
+              <div>
+                <p className="text-[10px] font-extrabold tracking-[1.7px] text-[#27A879] uppercase">
+                  Dashboard do Administrador
+                </p>
+                <h1 className="mt-2 text-3xl font-black tracking-[-1.4px] md:text-4xl">
+                  Indicadores
+
+[truncated: omitted lines 575-626 (2503 bytes, bytes 25566-28068)]
+
+D80] uppercase">
+                        <th className="py-2.5 pr-3">Nome</th>
+                        <th className="py-2.5 pr-3">Email</th>
+                        <th className="py-2.5 pr-3">Perfil</th>
+                        <th className="py-2.5">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userRows.map((u) => (
+                        <tr key={u.id} className="border-b border-[#273C42]/6">
+                          <td className="py-3 pr-3 font-bold">{u.name}</td>
+                          <td className="py-3 pr-3 text-[#6F7D80]">{u.email}</td>
+                          <td className="py-3 pr-3 capitalize">{u.role}</td>
+                          <td className="py-3">
+                            <span className="rounded-md bg-[#27A879]/14 px-2 py-0.5 text-[10px] font-bold text-[#208761]">
+                              {u.status === 'active' ? 'Ativo' : 'Inativo'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section className="rounded-[22px_22px_22px_8px] bg-[#273C42] p-6 text-white">
+                <h2 className="text-lg font-black">Módulos Administrativos</h2>
+                <div className="mt-4 grid gap-2 text-xs font-bold">
+                  {[
+                    { label: 'Equipe (Veterinários & Recepção)', href: '/sistema/equipe' },
+                    { label: 'Moderação de Ocorrências', href: '/sistema/ocorrencias' },
+                    { label: 'Catálogo de Serviços', href: '/sistema/servicos' },
+                    { label: 'Controle Financeiro', href: '/sistema/financeiro' },
+                    { label: 'Gerenciamento de Estoque', href: '/sistema/estoque' },
+                    { label: 'Histórico & Auditoria', href: '/sistema/auditoria' },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center justify-between rounded-xl bg-white/10 px-3.5 py-2.5 hover:bg-white/15"
+                    >
+                      {item.label} <Icon name="arrow" size={14} />
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </>
+        )}
+      </div>
+    </main>
+  )
+}
+
+--- module head through AI state ---
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useMemo, useState, useTransition } from 'react'
+import type { AppRole } from '@/access/app-access'
+import {
+  createAppointmentAction,
+  createLostReportAction,
+  createPetAction,
+  updateClinicalRecordAction,
+  updateLostReportStatusAction,
+  updatePetAction,
+} from '@/app/(frontend)/sistema/system-actions'
+import { Icon, type IconName } from '@/components/petsos/Icon'
+import type {
+  SerializedAppointment,
+  SerializedLostReport,
+  SerializedPet,
+  SerializedUserRow,
+} from '@/lib/petsos-types'
+
+type SectionConfig = {
+  title: string
+  eyebrow: string
+  description: string
+  action: string
+  icon: IconName
+}
+
+const sections: Record<string, SectionConfig> = {
+  agenda: {
+    action: 'Novo agendamento',
+    description: 'Agenda da clínica com visualização diária, semanal e mensal.',
+    eyebrow: 'Gestão veterinária',
+    icon: 'calendar',
+    title: 'Agenda clínica',
+  },
+  animais: {
+    action: 'Cadastrar animal',
+    description: 'Listagem, cadastro completo, perfil, vacinação, exames e responsáveis.',
+    eyebrow: 'Gestão de animais',
+    icon: 'paw',
+    title: 'Meus animais',
+  },
+  auditoria: {
+    action: 'Atualizar registros',
+    description: 'Histórico cronológico de atividades operacionais e conformidade.',
+    eyebrow: 'Governança & segurança',
+    icon: 'shield',
+    title: 'Histórico de atividades e auditoria',
+  },
+  cadastros: {
+    action: 'Cadastrar animal',
+    description: 'Cadastros de tutores e pacientes atendidos pela recepção.',
+    eyebrow: 'Recepção',
+    icon: 'users',
+    title: 'Cadastros recentes',
+  },
+  configuracoes: {
+    action: 'Salvar configurações',
+    description: 'Dados institucionais, horários de funcionamento e parâmetros da clínica.',
+    eyebrow: 'Administração',
+    icon: 'settings',
+    title: 'Configurações da clínica',
+  },
+  consultas: {
+    action: 'Agendar consulta',
+    description: 'Gerencie agendamentos, retornos, vacinações e detalhes das consultas.',
+    eyebrow: 'Cuidado veterinário',
+    icon: 'calendar',
+    title: 'Consultas e agendamentos',
+  },
+  equipe: {
+    action: 'Convidar profissional',
+    description: 'Gerenciamento de médicos-veterinários, recepcionistas e escalas.',
+    eyebrow: 'Corpo clínico & apoio',
+    icon: 'briefcase',
+    title: 'Veterinários e recepcionistas',
+  },
+  estoque: {
+    action: 'Registrar insumo',
+    description: 'Controle de vacinas, medicamentos, materiais clínicos e estoque mínimo.',
+    eyebrow: 'Operação',
+    icon: 'box',
+    title: 'Gerenciamento de estoque',
+  },
+  exames: {
+    action: 'Solicitar exame',
+    description: 'Solicitações laboratoriais, exames de imagem e resultados por paciente.',
+    eyebrow: 'Diagnóstico',
+    icon: 'syringe',
+    title: 'Solicitação e resultados de exames',
+  },
+  fila: {
+    action: 'Novo atendimento',
+    description: 'Acompanhamento de pacientes aguardando triagem, em consultório e finalizados.',
+    eyebrow: 'Fluxo clínico',
+    icon: 'clock',
+    title: 'Fila de atendimento',
+  },
+  financeiro: {
+    action: 'Novo lançamento',
+    description: 'Receitas de consultas, procedimentos, exames e despesas operacionais.',
+    eyebrow: 'Administração',
+    icon: 'chart',
+    title: 'Controle financeiro',
+  },
+  ia: {
+    action: 'Nova conversa',
+    description: 'Orientações sobre cuidados, alimentação, adaptação e saúde preventiva.',
+    eyebrow: 'Assistente para tutores',
+    icon: 'sparkles',
+    title: 'IA para Tutores',
+  },
+  'ia-clinica': {
+    action: 'Nova análise clínica',
+    description: 'Resumo automático de prontuários, hipóteses auxiliares e pontos de atenção.',
+    eyebrow: 'Assistente para veterinários',
+    icon: 'sparkles',
+    title: 'IA Clínica Veterinária',
+  },
+  mensagens: {
+    action: 'Iniciar conversa',
+    description: 'Comunicação entre tutores, clínica e pessoas que encontraram animais.',
+    eyebrow: 'Comunicação',
+    icon: 'message',
+    title: 'Lista de conversas e chat',
+  },
+  notificacoes: {
+    action: 'Preferências',
+    description: 'Avisos de consultas, vacinas, exames e possíveis correspondências de animais.',
+    eyebrow: 'Central de notificações',
+    icon: 'bell',
+    title: 'Notificações e preferências',
+  },
+  ocorrencias: {
+    action: 'Publicar ocorrência',
+    description: 'Gerencie publicações de animais perdidos e encontrados, mapa e correspondências.',
+    eyebrow: 'Proteção animal',
+    icon: 'search',
+    title: 'Busca de animais perdidos e encontrados',
+  },
+  pacientes: {
+    action: 'Cadastrar paciente',
+    description: 'Lista de pacientes da clínica com acesso ao perfil e prontuário completo.',
+    eyebrow: 'Clínica veterinária',
+    icon: 'paw',
+    title: 'Lista de pacientes',
+  },
+  prontuarios: {
+    action: 'Registrar atendimento',
+    description:
+      'Anamnese, exame clínico, diagnóstico, prescrição, vacinação, procedimentos e alta.',
+    eyebrow: 'Prontuário eletrônico',
+    icon: 'file',
+    title: 'Prontuário eletrônico completo',
+  },
+  relatorios: {
+    action: 'Exportar resumo',
+    description: 'Indicadores reais da clínica, atendimentos realizados e rede de reencontros.',
+    eyebrow: 'Gestão por indicadores',
+    icon: 'chart',
+    title: 'Relatórios e indicadores',
+  },
+  servicos: {
+    action: 'Novo serviço',
+    description: 'Cadastro e organização dos serviços veterinários, vacinas e exames oferecidos.',
+    eyebrow: 'Catálogo clínico',
+    icon: 'stethoscope',
+    title: 'Serviços da clínica',
+  },
+  usuarios: {
+    action: 'Gerenciar acessos',
+    description: 'Tutores, veterinários, recepcionistas e administradores cadastrados.',
+    eyebrow: 'Administração',
+    icon: 'users',
+    title: 'Gerenciamento de usuários',
+  },
+}
+
+const speciesMap: Record<string, string> = { dog: 'Cão', cat: 'Gato', other: 'Outro' }
+const sizeMap: Record<string, string> = { small: 'Pequeno', medium: 'Médio', large: 'Grande' }
+const sexMap: Record<string, string> = {
+  female: 'Fêmea',
+  male: 'Macho',
+  unknown: 'Não informado',
+}
+const statusMap: Record<string, { label: string; cls: string }> = {
+  scheduled: { label: 'Agendada', cls: 'bg-[#62B9E8]/18 text-[#287BA8]' },
+  waiting: { label: 'Aguardando', cls: 'bg-[#F4B96A]/25 text-[#966A25]' },
+  in_progress: { label: 'Em atendimento', cls: 'bg-[#27A879]/16 text-[#208761]' },
+  completed: { label: 'Finalizada', cls: 'bg-[#273C42]/10 text-[#273C42]' },
+  cancelled: { label: 'Cancelada', cls: 'bg-[#C9634C]/15 text-[#9A3F2B]' },
+}
+
+export function ModuleView({
+  appointments,
+  lostReports,
+  pets,
+  role,
+  section,
+  userRows,
+}: {
+  appointments: SerializedAppointment[]
+  lostReports: SerializedLostReport[]
+  pets: SerializedPet[]
+  role: AppRole
+  section: string
+  userRows: SerializedUserRow[]
+}) {
+  const router = useRouter()
+  const [pending, startTransition] = useTransition()
+  const [feedback, setFeedback] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+  const [search, setSearch] = useState('')
+
+  // Modals & local UI state
+  const [showPetForm, setShowPetForm] = useState(false)
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
+  const [petProfileTab, setPetProfileTab] = useState<
+    'info' | 'historico' | 'vacinas' | 'documentos' | 'responsaveis'
+  >('info')
+
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false)
+  const [calendarScale, setCalendarScale] = useState<'diaria' | 'semanal' | 'mensal'>('semanal')
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(
+    appointments[0]?.id ?? null,
+  )
+
+  const [lostFormMode, setLostFormMode] = useState<'none' | 'lost' | 'found'>('none')
+  const [lostTab, setLostTab] = useState<'todas' | 'minhas' | 'correspondencias' | 'mapa'>('todas')
+
+  // AI state
+  const [selectedAiPetId, setSelectedAiPetId] = useState<string>(pets[0]?.id ?? '')
+  const [aiInput, setAiInput] = useState('')
+  const [aiThreads, setAiThreads] = useState<
+    Array<{ id: string; title: string; messages: Array<{ from: 'user' | 'ai'; text: string }> }>
+  >([])
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null)
+
+  // Notifications & Messages state
+  const [notifTab, setNotifTab] = useState<'central' | 'preferencias'>('central')
+  const [chatMessage, setChatMessage] = useState('')
+  const [chatLog, setChatLog] = useState<Array<{ sender: string; text: string; time: string }>>([])
+
+  // Admin session-local catalog items (starts empty - no fake items!)
+  const [localEntries, setLocalEntries] = useState<
+    Array<{ id: string; col1: string; col2: string; col3: string }>
+  >([])
+  const [showLocalModal, setShowLocalModal] = useState(false)
+
+  const config = sections[section] ?? sections.prontuarios
+  const selectedPet = useMemo(
+    () => pets.find((p) => p.id === selectedPetId) ?? null,
+    [pets, selectedPetId],
+  )
+  const selectedAppointment = useMemo(
+    () => appointments.find((a) => a.id === selectedAppointmentId) ?? appointments[0] ?? null,
+    [appointments, selectedAppointmentId],
+  )
+
+  const filteredPets = useMemo(
+    () =>
+      pets.filter(
+        (p) =>
+          !search ||
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.breed.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [pets, search],
+  )
+
+  const matches = useMemo(() => {
+    const lost = lostReports.filter((r) => r.situation === 'lost')
+    const found = lostReports.filter((r) => r.situation === 'found')
+    return lost.flatMap((l) =>
+      found
+        .filter((f) => f.species === l.species && f.city.toLowerCase() === l.city.toLowerCase())
+        .map((f) => ({ lost: l, found: f })),
+    )
+  }, [lostReports])
+
+  function handleCreatePet(formData: FormData) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await createPetAction(formData)
+      if (res.ok) {
+        setShowPetForm(false)
+        setFeedback({ kind: 'ok', text: res.message || 'Animal cadastrado!' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Erro ao cadastrar animal.' })
+      }
+    })
+  }
+
+  function handleUpdatePet(formData: FormData) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await updatePetAction(formData)
+      if (res.ok) {
+        setFeedback({ kind: 'ok', text: res.message || 'Dados atualizados!' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Erro ao atualizar.' })
+      }
+    })
+  }
+
+  function handleCreateAppointment(formData: FormData) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await createAppointmentAction(formData)
+      if (res.ok) {
+        setShowAppointmentForm(false)
+        setFeedback({ kind: 'ok', text: res.message || 'Consulta agendada!' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Erro ao agendar.' })
+      }
+    })
+  }
+
+  function handleUpdateClinical(formData: FormData) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await updateClinicalRecordAction(formData)
+      if (res.ok) {
+        setFeedback({ kind: 'ok', text: res.message || 'Prontuário salvo!' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Não foi possível salvar.' })
+      }
+    })
+  }
+
+  function handleCreateLostReport(formData: FormData) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await createLostReportAction(formData)
+      if (res.ok) {
+        setLostFormMode('none')
+        setFeedback({ kind: 'ok', text: res.message || 'Ocorrência publicada!' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Erro ao publicar.' })
+      }
+    })
+  }
+
+  function handleReportStatus(
+    id: string,
+    status: 'active' | 'reunited' | 'closed' | 'under_review',
+  ) {
+    setFeedback(null)
+    startTransition(async () => {
+      const res = await updateLostReportStatusAction(id, status)
+      if (res.ok) {
+        setFeedback({ kind: 'ok', text: res.message || 'Status atualizado.' })
+        router.refresh()
+      } else {
+        setFeedback({ kind: 'err', text: res.error || 'Permissão insuficiente.' })
+      }
+    })
+  }
+
+  function handleAiSubmit(e: React.FormEvent, presetPrompt?: string) {
+    e.preventDefault()
+    const text = (presetPrompt ?? aiInput).trim()
+    if (!text) return
+    const isVet = section === 'ia-clinica'
+    const petContext = pets.find((p) => p.id === selectedAiPetId)
+    const aiReply = isVet
+      ? `Análise auxiliar estruturada${petContext ? ` (${petContext.name})` : ''}: 1) Pontos de atenção na anamnese e parâmetros vitais; 2) Sugere-se avaliar hidratação, mucosas, dor abdominal e considerar hemograma/bioquímico conforme exame físico; 3) Lembrete ético: síntese gerada por IA apenas para apoio à decisão do médico-veterinário.`
+      : `Orientação de apoio${petContext ? ` para ${petContext.name}` : ''}: mantenha rotina tranquila, hidratação constante, alimentação adequada ao porte e vacinação em dia. Se notar vômitos persistentes, apatia, falta de apetite ou dor, agende consulta presencial com o veterinário.`
+
+    if (!activeThreadId) {
+      const newId = String(Date.now())
+      setAiThreads((prev) => [
+        {
+          id: newId,
+          title: text.slice(0, 34),
+          messages: [
+            { from: 'user', text },
+            { from: 'ai', text: aiReply },
+          ],
+        },
+        ...prev,
+      ])
+      setActiveThreadId(newId)
+    } else {
+      setAiThreads((prev) =>
+        prev.map((t) =>
+          t.id === activeThreadId
+            ? {
+                ...t,
+                messages: [...t.messages, { from: 'user', text }, { from: 'ai', text: aiReply }],
+              }
+            : t,
+        ),
+      )
+    }
+    setAiInput('')
+  }
+
+  const activeThread = aiThreads.find((t) => t.id === activeThreadId) ?? null
+
+  return (
+    <main className="px-5 py-8 md:px-8 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-[1320px]">
+        {/* Header */}
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div>
+            <p className="text-[10px] font-extrabold tracking-[1.7px] text-[#27A879] uppercase">
+              {config.eyebrow}
+            </p>
+            <h1 className="mt-2 text-3xl font-black tracking-[-1.3px] md:text-4xl">
+              {config.title}
+            </h1>
+            <p className="mt-2 text-sm text-[#6F7D80]">{config.description}</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
+            {(section === 'animais' || section === 'pacientes' || section === 'cadastros') && (
+              <button
+                type="button"
+                onClick={() => setShowPetForm(!showPetForm)}
+                className="flex min-h-11 items-center gap-2 rounded-[13px_13px_13px_5px] bg-[#27A879] px-5 text-xs font-bold text-white shadow-[0_10px_25px_rgba(39,168,121,.2)]"
+              >
+                <Icon name="plus" size={16} /> Cadastrar animal
+              </button>
+            )}
+            {(section === 'consultas' || section === 'agenda' || section === 'fila') && (
+              <button
+                type="button"
+                onClick={() => setShowAppointmentForm(!showAppointmentForm)}
+                className="flex min-h-11 items-center gap-2 rounded-[13px_13px_13px_5px] bg-[#27A879] px-5 text-xs font-bold text-white shadow-[0_10px_25px_rgba(39,168,121,.2)]"
+              >
+                <Icon name="plus" size={16} /> Novo agendamento
+
+--- module AI block ---
+                      placeholder="Hemograma, perfil renal, ultrassom..."
+                      className="auth-input"
+                    />
+                  </label>
+                  <label className="auth-label">
+                    Vacinação e procedimentos realizados
+                    <input
+                      name="procedures"
+                      defaultValue={selectedAppointment?.procedures ?? ''}
+                      placeholder="Aplicação vacinal, curativo, fluidoterapia..."
+                      className="auth-input"
+                    />
+                  </label>
+                  {selectedAppointment && (
+                    <div className="sm:col-span-2 flex justify-end pt-2">
+                      <button
+                        disabled={pending}
+                        className="min-h-11 rounded-xl bg-[#27A879] px-6 text-xs font-bold text-white"
+                      >
+                        Salvar e atualizar atendimento
+                      </button>
+                    </div>
+                  )}
+                </form>
+              </section>
+            </div>
+          </div>
+        )}
+
+        {/* ==================== 3. INTELIGÊNCIA ARTIFICIAL (TUTOR & VETERINÁRIO) ==================== */}
+        {(section === 'ia' || section === 'ia-clinica') && (
+          <div className="mt-8 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#F4B96A]/45 bg-[#F4B96A]/18 px-5 py-3.5 text-xs font-bold text-[#7A5A24]">
+              <span className="flex items-center gap-2">
+                <Icon name="shield" size={17} /> Ferramenta de apoio: a IA auxilia na organização de
+                informações e orientações gerais, nunca substituindo o médico-veterinário.
+              </span>
+              {pets.length > 0 && (
+                <select
+                  value={selectedAiPetId}
+                  onChange={(e) => setSelectedAiPetId(e.target.value)}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-[#273C42]"
+                >
+                  {pets.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      Contexto: {p.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            <div className="grid min-h-[560px] overflow-hidden rounded-[24px_24px_24px_8px] border border-[#273C42]/8 bg-white lg:grid-cols-[290px_1fr]">
+              <aside className="border-b border-[#273C42]/8 bg-[#F8F5F0] p-5 lg:border-b-0 lg:border-r">
+                <button
+                  type="button"
+                  onClick={() => setActiveThreadId(null)}
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#273C42] text-xs font-bold text-white"
+                >
+                  <Icon name="plus" size={16} /> {config.action}
+                </button>
+                <p className="mt-6 text-[10px] font-extrabold tracking-[1.4px] text-[#9AA4A5] uppercase">
+                  {section === 'ia-clinica' ? 'Histórico de análises' : 'Histórico de conversas'}
+                </p>
+                {aiThreads.length === 0 ? (
+                  <div className="mt-3 rounded-xl border border-dashed border-[#273C42]/15 p-4 text-center text-[11px] text-[#7D898B]">
+                    Nenhuma conversa iniciada nesta sessão
+                  </div>
+                ) : (
+                  <div className="mt-3 space-y-1.5">
+                    {aiThreads.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setActiveThreadId(t.id)}
+                        className={`w-full truncate rounded-xl px-3.5 py-2.5 text-left text-xs font-bold ${
+                          activeThreadId === t.id ? 'bg-[#27A879] text-white' : 'bg-white'
+                        }`}
+                      >
+                        {t.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </aside>
+
+              <section className="flex flex-col justify-between p-6">
+                <div className="space-y-4">
+                  {!activeThread ? (
+                    <div className="py-10 text-center">
+                      <span className="mx-auto grid size-15 place-items-center rounded-2xl bg-[#62B9E8]/18 text-[#287BA8]">
+                        <Icon name="sparkles" size={28} />
+                      </span>
+                      <h2 className="mt-4 text-xl font-black">
+                        {section === 'ia-clinica'
+                          ? 'Assistente de IA Clínica para Veterinários'
+                          : 'Assistente de Cuidados para Tutores'}
+                      </h2>
+                      <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#6F7D80]">
+                        {section === 'ia-clinica'
+                          ? 'Gere resumos automáticos de prontuários, organize anamneses e revise hipóteses e pontos de atenção.'
+                          : 'Receba orientações educativas sobre rotina, alimentação, prevenção de parasitas e sinais que exigem consulta.'}
+                      </p>
+                      <div className="mx-auto mt-6 flex max-w-xl flex-wrap justify-center gap-2">
+                        {(section === 'ia-clinica'
+                          ? [
+                              'Gerar estrutura de resumo de prontuário SOAP',
+                              'Pontos de atenção para vômito agudo em cão adulto',
+                              'Checklist pré-operatório de rotina',
+                            ]
+                          : [
+                              'Cuidados após aplicação de vacina anual',
+                              'Adaptação alimentar segura para filhotes',
+                              'Prevenção de pulgas e carrapatos',
+                            ]
+                        ).map((suggestion) => (
+                          <button
+                            key={suggestion}
+                            type="button"
+                            onClick={(e) => handleAiSubmit(e, suggestion)}
+                            className="rounded-xl border border-[#273C42]/12 bg-[#F8F5F0] px-3.5 py-2 text-xs font-semibold hover:border-[#27A879]"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {activeThread.messages.map((m, idx) => (
+                        <div
+                          key={idx}
+                          className={`max-w-2xl rounded-2xl p-4 text-xs leading-6 ${
+                            m.from === 'user'
+                              ? 'ml-auto bg-[#273C42] text-white'
+                              : 'bg-[#F8F5F0] text-[#273C42]'
+                          }`}
+                        >
+                          {m.text}
+                        </div>
+                      ))}
+
+--- stderr ---
+
+
+Use `read` on the stdout/stderr paths above for the full output.
