@@ -259,6 +259,22 @@ O projeto inclui 100 casos de teste para garantir a qualidade do sistema. Abaixo
 | Demonstração de tratamento de erros (422, 404) | ✅ `notFound()` para registros inexistentes; estados de erro em formulários; validação de senha/email |
 | Repositório Git com commits organizados | ✅ Repositório inicializado com primeiro commit |
 
+## 👥 Integrantes do Projeto
+
+| Nome | GitHub |
+|------|--------|
+| Lázaro Alves | [@lazaralves](https://github.com/lazaralves) |
+| Gabriel Geraldo | [@gabrielgeraldo](https://github.com/gabrielgeraldo) |
+| Eudes Portela | [@eudesunifg-sys](https://github.com/eudesunifg-sys) |
+| Lara Dantas | [@laradantas](https://github.com/laradantas) |
+| Vitória Beatriz | [@vitoriabeatriz](https://github.com/vitoriabeatriz) |
+
+## 📄 Entregáveis Acadêmicos
+
+- **Artigo ABNT**: [`PetSOS_artigo_ABNT.pdf`](PetSOS_artigo_ABNT.pdf)
+- **Casos de Teste**: [`Casos_de_Teste_PetSOS (1).xlsx`](Casos_de_Teste_PetSOS%20(1).xlsx)
+- **Apresentação**: [`PetSOS-apresentacao.pptx.pdf`](PetSOS-apresentacao.pptx.pdf)
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
