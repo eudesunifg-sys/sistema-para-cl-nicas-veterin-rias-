@@ -25,22 +25,6 @@ O **PetSOS** é uma plataforma completa que reúne a gestão de saúde animal pa
 - **Perfis de Acesso:** Controle granular para Tutores, Veterinários e Administradores.
 - **Indicadores em Tempo Real:** Dashboard administrativo para gestão da clínica.
 
-## 👥 Perfis de Acesso para Teste
-
-| Perfil | Acesso | Descrição |
-|--------|--------|-----------|
-| **Tutor** | Cadastro via `/cadastro` | Acessa dashboard do tutor, gerencia seus pets e consultas. |
-| **Veterinário** | Criado pelo Admin | Acessa prontuários, realiza atendimento e prescrições. |
-| **Administrador** | Acesso via `/admin` | Acesso total à gestão do sistema e CMS. |
-
-## 📄 Integrantes do Projeto
-
-1. Eudes Portela
-2. Gabriel Geraldo
-3. Lara Dantas
-4. Lázaro Alves
-5. Vitória Beatriz
-
 ## 📂 Estrutura do Projeto
 
 ```
@@ -58,36 +42,22 @@ src/
 └── payload.config.ts        # Configuração principal do Payload CMS
 ```
 
-## 🚀 Como Executar o Projeto Localmente
+## 🌐 Acesso ao Site
 
-### Pré-requisitos
-- Node.js (v20 ou superior)
-- pnpm (`npm i -g pnpm`)
+O site está disponível apenas pela URL pública do Figma Make:
 
-### Instalação e Execução
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/SEU-USUARIO/sistema-para-clinicas-veterinarias.git
-   cd sistema-para-clinicas-veterinarias
-   ```
+https://repair-tawny-88343290.figma.site/
 
-2. **Instale as dependências:**
-   ```bash
-   pnpm install
-   ```
+## 🛠️ Como o Projeto Foi Desenvolvido
 
-3. **Inicie o servidor de desenvolvimento:**
-   ```bash
-   pnpm dev
-   ```
+O PetSOS foi desenvolvido em quatro etapas principais, cada uma focada em um entregável específico do projeto:
 
-4. **Acesse no navegador:**
-   - App: [http://localhost:3000](http://localhost:3000)
-   - Login: [http://localhost:3000/login](http://localhost:3000/login)
-   - Cadastro: [http://localhost:3000/cadastro](http://localhost:3000/cadastro)
-   - Painel CMS (Admin): [http://localhost:3000/admin](http://localhost:3000/admin)
+1. **Documentação da equipe** — Nomes dos integrantes registrados em `INTEGRANTES.md`.
+2. **Garantia de qualidade** — Suite completa de 100 casos de teste (CT001–CT100) cobrindo clientes, animais, consultas e relatórios.
+3. **Análise de escopo** — Mapeamento dos requisitos às aulas 1–3 (banco, API, tela) e identificação de lacunas de escopo.
+4. **Documentação da API** — Endpoints REST das 7 coleções Payload, Swagger/OpenAPI pendente e mapa de responsabilidades por commit.
 
-> **Nota:** Para o funcionamento completo da persistência de dados fora do ambiente Figma Make, certifique-se de configurar as variáveis de ambiente do Payload.
+A aplicação foi construída com Next.js 16 (App Router), Payload 4.0 (CMS com 7 coleções: users, pets, appointments, lost-reports, media, folders, tags) e Tailwind CSS v4, rodando dentro do ambiente Figma Make.
 
 ## 📋 Casos de Teste (100 Casos de Garantia de Qualidade)
 
